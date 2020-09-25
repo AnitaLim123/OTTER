@@ -61,6 +61,9 @@ bool initGLFW() {
 	if (glfwInit() == GLFW_FALSE) {
 		LOG_ERROR("Failed to initialize GLFW");
 		return false;
+
+		// Set our window resized callback
+		glfwSetWindowSizeCallback(window, GlfwWindowResizedCallback);
 	}
 
 	//Create a new GLFW window
