@@ -9,25 +9,20 @@ Shader::Shader() :
 	_handle(0)
 {
 	// TODO: Constructor
-
 	_handle = glCreateProgram();
 }
 
 Shader::~Shader() {
-
 	// TODO: Destructor
-
 	if (_handle != 0) {
 		glDeleteProgram(_handle);
 		_handle = 0;
 	}
-
 }
 
 bool Shader::LoadShaderPart(const char* source, GLenum type)
 {
 	// TODO: Implement
-
 	// Creates a new shader part (VS, FS, GS, etc...)
 	GLuint handle = glCreateShader(type);
 
@@ -37,25 +32,20 @@ bool Shader::LoadShaderPart(const char* source, GLenum type)
 
 	// Get the compilation status for the shader part
 	GLint status = 0;
-	glGetShaderiv(handle, GL_COMPILE_STATUS, &status); //get info from status
+	glGetShaderiv(handle, GL_COMPILE_STATUS, &status);
 
 	if (status == GL_FALSE) {
 		// Get the size of the error log
 		GLint logSize = 0;
 		glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &logSize);
-
 		// Create a new character buffer for the log
 		char* log = new char[logSize];
-
 		// Get the log
 		glGetShaderInfoLog(handle, logSize, &logSize, log);
-
 		// Dump error log
 		LOG_ERROR("Failed to compile shader part:\n{}", log);
-
 		// Clean up our log memory
 		delete[] log;
-
 		// Delete the broken shader result
 		glDeleteShader(handle);
 		handle = 0;
@@ -66,9 +56,7 @@ bool Shader::LoadShaderPart(const char* source, GLenum type)
 	case GL_FRAGMENT_SHADER: _fs = handle; break;
 	default: LOG_WARN("Not implemented"); break;
 	}
-
 	return status != GL_FALSE;
-
 }
 
 bool Shader::LoadShaderPartFromFile(const char* path, GLenum type) {
@@ -80,25 +68,22 @@ bool Shader::LoadShaderPartFromFile(const char* path, GLenum type) {
 	return result;
 }
 
-bool Shader::Link() //frag and vertex must be set before doing this
+bool Shader::Link()
 {
 	// Todo: Implement
-
 	LOG_ASSERT(_vs != 0 && _fs != 0, "Must attach both a vertex and fragment shader!");
 
 	// Attach our two shaders
 	glAttachShader(_handle, _vs);
 	glAttachShader(_handle, _fs);
-
 	// Perform linking
-	glLinkProgram(_handle); //pull source code out from frag vertex, the compiled code will be stored in the shader itself
+	glLinkProgram(_handle);
 
 	// Remove shader parts to save space (we can do this since we only needed the shader parts to compile an actual shader program)
 	glDetachShader(_handle, _vs);
 	glDeleteShader(_vs);
 	glDetachShader(_handle, _fs);
 	glDeleteShader(_fs);
-
 	GLint status = 0;
 	glGetProgramiv(_handle, GL_LINK_STATUS, &status);
 
